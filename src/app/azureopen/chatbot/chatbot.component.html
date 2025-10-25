@@ -1,0 +1,191 @@
+<div class="flex flex-col h-screen bg-gradient-to-br from-gray-50 to-gray-100 w-full relative overflow-hidden">
+  <!-- Patrón de fondo decorativo -->
+  <div class="absolute inset-0 opacity-[0.03] pointer-events-none">
+    <div class="absolute top-0 left-0 w-96 h-96 bg-[#228B22] rounded-full blur-3xl"></div>
+    <div class="absolute bottom-0 right-0 w-96 h-96 bg-[#228B22] rounded-full blur-3xl"></div>
+  </div>
+
+  <!-- HEADER -->
+  <header
+    class="bg-gradient-to-r from-[#228B22] to-[#2d9f2d] text-white py-4 shadow-lg flex items-center justify-between px-5 relative overflow-hidden z-10"
+  >
+    <!-- Patrón animado de fondo -->
+    <div class="absolute inset-0 opacity-10">
+      <div class="absolute w-full h-full bg-pattern animate-pattern-slide"></div>
+    </div>
+    
+    <div class="flex items-center gap-3 relative z-10">
+      <span class="text-3xl animate-bounce-subtle">🏛️</span>
+      <div>
+        <h1 class="text-xl font-bold tracking-wide">
+          Asistente Municipal - Santa
+        </h1>
+        <p class="text-xs text-white/80">Atención ciudadana 24/7</p>
+      </div>
+    </div>
+
+    <!-- Badge de estado -->
+    <div class="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-full relative z-10">
+      <span class="w-2 h-2 bg-green-300 rounded-full animate-pulse"></span>
+      <span class="text-xs font-medium">En línea</span>
+    </div>
+  </header>
+
+  <!-- CHAT -->
+  <main
+    class="flex-1 overflow-y-auto px-5 py-4 space-y-4 scrollbar-thin scrollbar-thumb-[#228B22]/70 scrollbar-track-gray-200 relative z-10"
+  >
+    <!-- Mensaje de bienvenida inicial -->
+    <div *ngIf="chatHistory.length === 0" class="flex flex-col items-center justify-center h-full text-center px-4 animate-fade-in">
+      <div class="mb-6 relative">
+        <div class="w-24 h-24 bg-gradient-to-br from-[#228B22] to-[#2d9f2d] rounded-3xl flex items-center justify-center shadow-2xl">
+          <span class="text-5xl">🏛️</span>
+        </div>
+        <div class="absolute -bottom-2 -right-2 w-8 h-8 bg-green-400 rounded-full flex items-center justify-center shadow-lg">
+          <span class="text-sm">✓</span>
+        </div>
+      </div>
+      <h2 class="text-2xl font-bold text-gray-800 mb-2">¡Bienvenido!</h2>
+      <p class="text-gray-600 mb-6 max-w-md">
+        Soy tu asistente virtual municipal. Estoy aquí para ayudarte con trámites, información y consultas.
+      </p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-2xl">
+        <button 
+          (click)="sendSuggestion('¿Cómo puedo pagar mis impuestos?')"
+          class="bg-white hover:bg-gray-50 border-2 border-gray-200 hover:border-[#228B22] rounded-xl p-4 text-left transition-all duration-200 group"
+        >
+          <span class="text-2xl mb-2 block group-hover:scale-110 transition-transform">💳</span>
+          <p class="text-sm font-medium text-gray-800">Pagos de impuestos</p>
+        </button>
+        <button 
+          (click)="sendSuggestion('¿Dónde solicito una licencia de construcción?')"
+          class="bg-white hover:bg-gray-50 border-2 border-gray-200 hover:border-[#228B22] rounded-xl p-4 text-left transition-all duration-200 group"
+        >
+          <span class="text-2xl mb-2 block group-hover:scale-110 transition-transform">🏗️</span>
+          <p class="text-sm font-medium text-gray-800">Licencias</p>
+        </button>
+        <button 
+          (click)="sendSuggestion('Horarios de atención')"
+          class="bg-white hover:bg-gray-50 border-2 border-gray-200 hover:border-[#228B22] rounded-xl p-4 text-left transition-all duration-200 group"
+        >
+          <span class="text-2xl mb-2 block group-hover:scale-110 transition-transform">🕐</span>
+          <p class="text-sm font-medium text-gray-800">Horarios</p>
+        </button>
+        <button 
+          (click)="sendSuggestion('Números de contacto')"
+          class="bg-white hover:bg-gray-50 border-2 border-gray-200 hover:border-[#228B22] rounded-xl p-4 text-left transition-all duration-200 group"
+        >
+          <span class="text-2xl mb-2 block group-hover:scale-110 transition-transform">📞</span>
+          <p class="text-sm font-medium text-gray-800">Contacto</p>
+        </button>
+      </div>
+    </div>
+
+
+  <div *ngFor="let msg of chatHistory; let i = index" class="message-container">
+    <div
+      class="flex items-end gap-3 animate-fade-in"
+      [ngClass]="{
+        'justify-end': msg.role === 'user',
+        'justify-start': msg.role === 'assistant'
+      }"
+    >
+      <!-- Avatar del asistente -->
+      <div *ngIf="msg.role === 'assistant'" class="flex-shrink-0">
+        <div class="w-12 h-12 bg-gradient-to-br from-[#228B22] to-[#2d9f2d] rounded-full flex items-center justify-center shadow-md">
+          <span class="text-3xl">🤖</span>
+        </div>
+      </div>
+
+      <!-- Burbuja del mensaje -->
+      <div
+        [ngClass]="{
+          'bg-gradient-to-br from-[#228B22] to-[#1e7a1e] text-white rounded-2xl rounded-br-md shadow-md hover:shadow-lg':
+            msg.role === 'user',
+          'bg-white text-gray-800 rounded-2xl rounded-bl-md shadow-md hover:shadow-xl border border-gray-100':
+            msg.role === 'assistant'
+        }"
+        class="max-w-[70%] px-5 py-3 text-sm leading-relaxed whitespace-pre-wrap prose prose-sm transition-all duration-300 relative group"
+      >
+        <markdown *ngIf="msg.role === 'assistant'" [data]="msg.content"></markdown>
+        <div *ngIf="msg.role === 'user'">{{ msg.content }}</div>
+      </div>
+
+      <!-- Avatar del usuario -->
+      <div *ngIf="msg.role === 'user'" class="flex-shrink-0">
+        <div class="w-12 h-12 bg-gradient-to-br from-gray-400 to-gray-600 rounded-full flex items-center justify-center shadow-md">
+          <span class="text-3xl">👤</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Timestamp -->
+    <div
+      [ngClass]="{
+        'text-right mr-12': msg.role === 'user',
+        'text-left ml-12': msg.role === 'assistant'
+      }"
+      class="text-xs text-gray-400 mt-1"
+    >
+      {{ msg.timestamp || 'Ahora' }}
+    </div>
+  </div>
+
+    <!-- Indicador de escritura -->
+    <div *ngIf="loading" class="flex justify-start animate-fade-in">
+      <div class="flex-shrink-0 mr-3">
+        <div class="w-8 h-8 bg-gradient-to-br from-[#228B22] to-[#2d9f2d] rounded-full flex items-center justify-center shadow-md">
+          <span class="text-sm">🏛️</span>
+        </div>
+      </div>
+      <div class="bg-white rounded-2xl rounded-bl-md shadow-md px-5 py-3 border border-gray-100">
+        <div class="flex items-center gap-2">
+          <div class="flex gap-1">
+            <span class="w-2 h-2 bg-[#228B22] rounded-full animate-bounce" style="animation-delay: 0s"></span>
+            <span class="w-2 h-2 bg-[#228B22] rounded-full animate-bounce" style="animation-delay: 0.2s"></span>
+            <span class="w-2 h-2 bg-[#228B22] rounded-full animate-bounce" style="animation-delay: 0.4s"></span>
+          </div>
+          <span class="text-xs text-gray-500">Escribiendo...</span>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer
+    class="bg-white/80 backdrop-blur-md border-t border-gray-200 px-5 py-4 flex items-center gap-3 shadow-lg relative z-10"
+  >
+    <!-- Botón de acciones rápidas -->
+<!--     <button 
+      class="bg-gray-100 hover:bg-gray-200 text-gray-600 p-3 rounded-xl transition-all duration-200 shadow-sm hover:shadow-md"
+      title="Acciones rápidas"
+    >
+      <span class="text-lg">➕</span>
+    </button> -->
+
+    <div class="flex-1 relative">
+          <input
+      [(ngModel)]="userMessage"
+      type="text"
+      placeholder="Escribe tu mensaje..."
+      (keydown)="handleKey($event)"   
+      class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 pr-12
+            focus:ring-2 focus:ring-[#228B22] focus:border-transparent
+            focus:outline-none transition-all duration-200 bg-gray-50 focus:bg-white"
+    />
+<!--       <span class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 transition-transform hover:scale-110 cursor-pointer">
+        😊
+      </span> -->
+    </div>
+    
+    <button
+      (click)="sendMessage()"
+      [disabled]="loading || !userMessage.trim()"
+      class="bg-gradient-to-r from-[#228B22] to-[#2d9f2d] hover:from-[#1e7a1e] hover:to-[#228B22] text-white px-6 py-3 rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg font-medium flex items-center gap-2 hover:scale-105 active:scale-95"
+    >
+      <span>{{ loading ? 'Enviando' : 'Enviar' }}</span>
+      <span *ngIf="!loading" class="animate-pulse">→</span>
+      <span *ngIf="loading" class="animate-spin">⏳</span>
+    </button>
+  </footer>
+</div>
